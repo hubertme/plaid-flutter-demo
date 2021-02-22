@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:plaid_flutter/plaid_flutter.dart';
 
 void main() {
   runApp(MyApp());
@@ -30,10 +31,33 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   int _counter = 0;
 
+  // Plaid stuff here
+  final String _plaidLinkToken = 'link-sandbox-aacf8349-a099-4683-8920-58df4d6fac8c';
+  PlaidLink _plaidLink;
+
   void _incrementCounter() {
     setState(() {
       _counter++;
     });
+  }
+
+  void _handlePlaidSuccess(String publicToken, LinkSuccessMetadata metadata) {
+    print('Public token: ${publicToken}');
+    print('Metadata: ${metadata}');
+  }
+
+  void _handlePlaid() {
+    print('Plaid pressed');
+    LinkConfiguration configuration = LinkConfiguration(
+      token: this._plaidLinkToken,
+    );
+
+    this._plaidLink = PlaidLink(
+      configuration: configuration,
+      onSuccess: this._handlePlaidSuccess,
+    );
+
+    this._plaidLink.open();
   }
 
   @override
@@ -53,6 +77,17 @@ class _MyHomePageState extends State<MyHomePage> {
               '$_counter',
               style: Theme.of(context).textTheme.headline4,
             ),
+            SizedBox(
+              height: 16,
+            ),
+            RaisedButton(
+                onPressed: () {
+                  this._handlePlaid();
+                },
+                child: Text(
+                  'Go, Plaid!!',
+                  style: Theme.of(context).textTheme.bodyText1,
+                )),
           ],
         ),
       ),
